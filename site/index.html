@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Оформление заказа</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 40px auto; }
+    input, button { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+    #result { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h2>Новый заказ</h2>
+  <form id="order-form">
+    <input name="customer" placeholder="Покупатель" required>
+    <input name="product" placeholder="Товар" required>
+    <input name="amount" type="number" step="0.01" min="0.01" placeholder="Сумма" required>
+    <button type="submit">Отправить</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('order-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const out = document.getElementById('result');
+      try {
+        const resp = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer: f.customer.value,
+            product: f.product.value,
+            amount: f.amount.value
+          })
+        });
+        const data = await resp.json();
+        out.textContent = resp.ok ? 'Заказ создан, № ' + data.order_id
+                                  : 'Ошибка: ' + (data.error || resp.status);
+        if (resp.ok) f.reset();
+      } catch (err) {
+        out.textContent = 'Сервер недоступен';
+      }
+    });
+  </script>
+</body>
+</html>

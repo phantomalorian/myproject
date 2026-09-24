@@ -1,0 +1,11 @@
+FROM python:3.11-slim-bookworm
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir kafka-python==2.0.2
+
+COPY delivery_consumer.py .
+
+CMD ["python", "delivery_consumer.py"]
